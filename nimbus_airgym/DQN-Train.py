@@ -31,7 +31,7 @@ from keras.callbacks import History
 
 parser = argparse.ArgumentParser()
 parser.add_argument('--mode', choices=['train', 'test'], default='train')
-parser.add_argument('--env-name', type=str, default='AirSimEnv-v42')
+parser.add_argument('--env-name', type=str, default='NimbusEnv-v0')
 parser.add_argument('--weights', type=str, default=None)
 args = parser.parse_args()
 
@@ -76,9 +76,9 @@ memory = SequentialMemory(limit=100000, window_length=WINDOW_LENGTH)            
 policy = LinearAnnealedPolicy(EpsGreedyQPolicy(), attr='eps', value_max=1., value_min=.1, value_test=0.0,
                               nb_steps=100000)
 
-dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=3000, 
-               enable_double_dqn=True, 
-               enable_dueling_network=True, dueling_type='avg', 
+dqn = DQNAgent(model=model, nb_actions=nb_actions, memory=memory, nb_steps_warmup=3000,
+               enable_double_dqn=True,
+               enable_dueling_network=True, dueling_type='avg',
                target_model_update=1e-2, policy=policy, gamma=.99)
 
 dqn.compile(Adam(lr=0.00025), metrics=['mae'])
@@ -88,14 +88,14 @@ if train:
     # Okay, now it's time to learn something! We visualize the training here for show, but this
     # slows down training quite a lot. You can always safely abort the training prematurely using
     # Ctrl + C.
-    
-    
+
+
     log_filename = 'dqn_{}_log.json'.format(args.env_name)
     callbacks = [FileLogger(log_filename, interval=100)]
-    
+
     dqn.fit(env, callbacks=callbacks, nb_steps=251000, visualize=False, verbose=2, log_interval=100)
-    
-    
+
+
     # After training is done, we save the final weights.
     dqn.save_weights('dqn_{}_weights.h5f'.format(args.env_name), overwrite=True)
 

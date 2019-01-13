@@ -2,7 +2,7 @@ from setuptools import setup
 import os
 
 setup(
-    name = "nimbus_airgym",
+    name = "nimbus_airsim",
     version = "1.0",
     author = "Mohamed Isse",
     author_email = "MiMohamud012@gmail.com",
