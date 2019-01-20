@@ -1,1 +1,47 @@
-/home/mohamedisse/Documents/AirSim/settings.json
+{ "SettingsVersion": 1, "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md", "SimMode": "Multirotor",
+"Recording": {
+    "RecordOnMove": false,
+    "RecordInterval": 0.05,
+    "Cameras": [
+        { "CameraName": "0", "ImageType": 0, "PixelsAsFloat": false, "Compress": true }
+    ]
+  },  "CameraDefaults": {
+    "CaptureSettings": [
+      {
+        "ImageType": 0,
+        "Width": 256,
+        "Height": 144,
+        "AutoExposureSpeed": 100,
+        "AutoExposureBias": 0,
+        "AutoExposureMaxBrightness": 0.64,
+        "AutoExposureMinBrightness": 0.03
+      }
+    ],
+    "NoiseSettings": [
+      {
+        "Enabled": false,
+        "ImageType": 0,
+
+        "RandContrib": 0.2,
+        "RandSpeed": 100000.0,
+        "RandSize": 500.0,
+        "RandDensity": 2,
+
+        "HorzWaveContrib":0.03,			
+        "HorzWaveStrength": 0.08,
+        "HorzWaveVertSize": 1.0,
+        "HorzWaveScreenSize": 1.0,
+        
+        "HorzNoiseLinesContrib": 1.0,
+        "HorzNoiseLinesDensityY": 0.01,
+        "HorzNoiseLinesDensityXY": 0.5,
+        
+        "HorzDistortionContrib": 1.0,
+        "HorzDistortionStrength": 0.002
+      }
+    ]
+   
+  }
+
+
+}
