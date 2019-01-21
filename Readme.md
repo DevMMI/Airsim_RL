@@ -5,9 +5,13 @@ AirSim/build_debug/output/bin
 
 ## How to quit execution of a python script without crashing unreal engine
 ctrl+z on python script
+
 $ps #to find the process id of script
+
 $kill -9 <process id>
+  
 then end the Airsim run
+
   
 ## A good example of what settings should look like ##
 https://github.com/Microsoft/AirSim/blob/master/docs/settings.md
