@@ -20,10 +20,14 @@ class ForestEnv(gym.Env):
     airgym = None
 
     def __init__(self):
+        # necessary
         # left depth, center depth, right depth, yaw
+        # necessary
         self.observation_space = spaces.Box(low=0, high=255, shape=(30, 100))
+
         self.state = np.zeros((30, 100), dtype=np.uint8)
 
+        # necessary
         self.action_space = spaces.Discrete(3)
 
         self.goal = 	[221.0, -9.0] # global xy coordinates
@@ -73,6 +77,7 @@ class ForestEnv(gym.Env):
 
 
     def _step(self, action):
+        # necessary
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
 
         self.addToLog('action', action)
@@ -125,6 +130,7 @@ class ForestEnv(gym.Env):
         self.allLogs[key].append(value)
 
     def _reset(self):
+        # necessary
         """
         Resets the state of the environment and returns an initial observation.
 
