@@ -13,7 +13,8 @@ client.enableApiControl(True)
 client.armDisarm(True)
 
 # Async methods returns Future. Call join() to wait for task to complete.
-client.takeoffAsync().join()
+#client.takeoffAsync().join()
+client.moveToZAsync(-3, 2).join()
 client.hoverAsync().join()
 
 # collision api
@@ -22,7 +23,7 @@ action = 19 * np.random.random_sample((1,20)) + 1
 
 client.moveByVelocityAsync(action[0,0], action[0,1], 0, 1.0).join()
 done = 0
-count = 100
+count = 1000
 print("reached beginning of loop")
 while done < count:
     done += 1
@@ -49,23 +50,24 @@ while done < count:
     #api Pose simGetVehiclePose(const std::string& vehicle_name = "") const;
     vehicle_pose = client.simGetVehiclePose().position
     vehicle_orientation = client.simGetVehiclePose().orientation
-    #print("Pose is x {}, y {}, z {}".format(vehicle_pose.x_val, vehicle_pose.y_val, vehicle_pose.z_val))
+    print("Pose is x {}, y {}, z {}".format(vehicle_pose.x_val, vehicle_pose.y_val, vehicle_pose.z_val))
 
     # Find velocity API
     vehicle_linear_vel = client.simGetGroundTruthKinematics().linear_velocity
     vehicle_vel = sqrt(vehicle_linear_vel.x_val**2 + vehicle_linear_vel.y_val**2)
     #print("Velocity is {}".format(vehicle_vel))
     # Resetting to origin api
-    if done == 50:
-        client.moveByVelocityAsync(0, 0, 0, 1.0).join()
+    if done % 20 == 0:
+        #client.moveByVelocityAsync(0, 0, 0, 1.0).join()
 
-         #% 10 == 0:
-
-    #     print("Resetting zero")
-    #     client.reset()
-    #     print("post reset")
-    #     client.enableApiControl(True)
-    #     client.armDisarm(True)
-    #     client.moveByVelocityAsync(action[0,0], action[0,1], 0, 1.0).join()
+        print("Resetting zero")
+        client.reset()
+        print("post reset")
+        client.enableApiControl(True)
+        client.armDisarm(True)
+        #client.hoverAsync().join()
+        client.moveToZAsync(-3, 2).join()
+        #client.hoverAsync().join()
+        #client.moveByVelocityAsync(action[0,0], action[0,1], 0, 1.0).join()
 
 client.hoverAsync().join()
