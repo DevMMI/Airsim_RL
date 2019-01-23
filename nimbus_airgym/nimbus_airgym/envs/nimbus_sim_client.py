@@ -15,6 +15,8 @@ class NimbusSimClient(MultirotorClient):
 
     def takeAction(self, action):
         ''' takes action and returns current position, whether collided, current velocity '''
+        # take action
+        self.moveByVelocityAsync(action[0], action[1], 0, 1.0).join()
 
         # get position
         vehicle_pose = client.simGetVehiclePose().position
