@@ -18,16 +18,16 @@ class ForestEnv(gym.Env):
     radius = 30
 
     def __init__(self):
-        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256))
+        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256), dtype=np.float16)
         self.state = np.zeros((144, 256), dtype=np.float16)
-        self.action_space = spaces.Box(low=0.0, high=1.0, shape=(2))
+        self.action_space = spaces.Box(low=0.0, high=1.0, shape=(2,), dtype=np.float16)
         self.episodeN = 0
         self.stepN = 0
 
         global airgym
         airgym = NimbusSimClient()
 
-    def _step(self, action):
+    def step(self, action):
         ''' takes action, environment returns an observation and reward,
             returns observation, reward, done and info values '''
         assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
@@ -39,7 +39,11 @@ class ForestEnv(gym.Env):
 
         return self.state, reward, done, {}
 
-    def _reset(self):
+    def seed(self, seed=None):
+        self.np_random, seed = seeding.np_random(seed)
+        return [seed]
+
+    def reset(self):
         """
         Resets the state of the environment and returns an initial observation.
 
