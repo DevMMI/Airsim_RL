@@ -1,9 +1,11 @@
 
 import os
 import sys
-s = "/".join(os.getcwd().split("/")[:-1]) + '/utils'
-sys.path.append(s)                  # Include utils module
-
+# include modules
+utils_ = "/".join(os.getcwd().split("/")[:-1]) + '/utils'
+airgym_ = "/".join(os.getcwd().split("/")[:-1]) + '/nimbus_airgym'
+sys.path.append(utils_)
+sys.path.append(airgym_)
 import pyglet
 import threading
 import tensorflow as tf

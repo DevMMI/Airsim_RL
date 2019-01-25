@@ -23,6 +23,8 @@ class Environment:
     def __init__(self):
 
         self.env = gym.make(Settings.ENV)
+        print("env initialized")
+        #exit(0)
         self.pixel_input = hasattr(Settings, 'CONV_LAYERS')
 
         self.frame_buffer = deque(maxlen=4)
@@ -129,7 +131,7 @@ class Environment:
 
         self.n_gif[self.name_gif] = (number + 1) % Settings.MAX_NB_GIF
         self.name_gif = 'save_'
-        
+
         print("Gif saved!\n")
 
     def close(self):

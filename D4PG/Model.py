@@ -53,7 +53,7 @@ def build_critic(states, actions, trainable, reuse, scope):
     with the concatenation of the two inputs.
 
     Args:
-        states   : a tensorflow placeholder containing the state of the 
+        states   : a tensorflow placeholder containing the state of the
                     environment
         actions  : a tensorflow placeholder containing the best action
                     according to the actor network
@@ -65,7 +65,13 @@ def build_critic(states, actions, trainable, reuse, scope):
     """
     with tf.variable_scope(scope):
 
-        layer = tf.concat([states, actions], axis=1)
+
+        # state is (144,256), action is (2)
+        action_expanded = tf.expand_dims(actions, 1) # adds a second dimension, now shape (2,1)
+        padding = tf.constant([[71, 71], [0, 0]]) # add 71 row before and after, no cols
+        tf.pad(action_expanded, padding, 'CONSTANT') # now shape (144, 1)
+
+        layer = tf.concat([states, action_expanded], axis=1)
 
         # Convolution layers
         if hasattr(Settings, 'CONV_LAYERS') and Settings.CONV_LAYERS:

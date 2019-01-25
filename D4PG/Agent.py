@@ -3,6 +3,7 @@ import tensorflow as tf
 import numpy as np
 from collections import deque
 
+import nimbus_airgym
 from Model import build_actor
 from network_utils import copy_vars, get_vars
 from Environment import Environment
@@ -49,7 +50,7 @@ class Agent:
                                             noise_summary,
                                             steps_summary])
 
-        self.writer = tf.summary.FileWriter(f"./logs/Agent_{self.n_agent}",
+        self.writer = tf.summary.FileWriter("./logs/Agent_{self.n_agent}",
                                             self.sess.graph)
 
     def build_actor(self):

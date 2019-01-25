@@ -32,7 +32,7 @@ class QNetwork:
 
         # Batch placeholders - for a tensor that will always be fed
         self.state_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.STATE_SIZE], name='state')
-        self.action_ph = tf.placeholder(dtype=tf.float32, shape=[None, Settings.ACTION_SIZE], name='action')
+        self.action_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.ACTION_SIZE], name='action')
         self.reward_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='reward')
         self.next_state_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.STATE_SIZE], name='next_state')
         self.not_done_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='not_done')
@@ -76,7 +76,7 @@ class QNetwork:
                                                        trainable=True, reuse=False,
                                                        scope='learner_critic')
 
-        # Compute Q(s_t, A(s_t)) with the same network
+        # Compute Q(s_t, A(s_t)) with the same network, reuses the weights of the above
         self.Q_distrib_suggested_actions = build_critic(self.state_ph, self.actions,
                                                        trainable=True, reuse=True,
                                                        scope='learner_critic')
@@ -157,6 +157,7 @@ class QNetwork:
             l_index = tf.stack((tf.range(self.batch_size), l_ind[:, j]), axis=1)
             u_index = tf.stack((tf.range(self.batch_size), u_ind[:, j]), axis=1)
 
+            # Grabs elements from the first argument of index l_index and u_index
             main_Q_distrib_l = tf.gather_nd(self.Q_distrib_given_actions, l_index)
             main_Q_distrib_u = tf.gather_nd(self.Q_distrib_given_actions, u_index)
 

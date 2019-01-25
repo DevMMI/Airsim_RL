@@ -7,7 +7,7 @@ class Settings:
     ###########################################################################
     # Environment settings
 
-    ENV = "Pendulum-v0"
+    ENV = "NimbusEnv-v0"
 
     LOAD    = True
     DISPLAY = True
@@ -41,7 +41,7 @@ class Settings:
     ###########################################################################
     # Algorithm hyper-parameters
 
-    NB_ACTORS = 6  # cpu_count() - 2
+    NB_ACTORS = 1  # cpu_count() - 2
 
     DISCOUNT      = 0.99
     N_STEP_RETURN = 5
@@ -98,7 +98,7 @@ class Settings:
     # these are of type https://github.com/openai/gym/blob/master/gym/spaces/box.py
     # meaning that they are probability distribution
     # example right here https://github.com/alibaba/gym-starcraft/blob/master/gym_starcraft/envs/single_battle_env.py
-    ACTION_SIZE = setting_env.action_space.shape[0]
+    ACTION_SIZE = setting_env.action_space.shape
     LOW_BOUND   = setting_env.action_space.low
     HIGH_BOUND  = setting_env.action_space.high
 

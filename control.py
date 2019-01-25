@@ -33,7 +33,8 @@ while done < count:
     #if collision_info.has_collided:
     #    print("Drone has collided}")
 
-
+    action = 19 * np.random.random_sample((1,20)) + 1
+    client.moveByVelocityAsync(action[0,0], action[0,1], 0, 5.0).join()
     # Grabbing an image API
     responses = client.simGetImages([airsim.ImageRequest("front_center", airsim.ImageType.Scene, False, False)])
     response = responses[0]
@@ -57,17 +58,17 @@ while done < count:
     vehicle_vel = sqrt(vehicle_linear_vel.x_val**2 + vehicle_linear_vel.y_val**2)
     #print("Velocity is {}".format(vehicle_vel))
     # Resetting to origin api
-    if done % 20 == 0:
-        #client.moveByVelocityAsync(0, 0, 0, 1.0).join()
-
-        print("Resetting zero")
-        client.reset()
-        print("post reset")
-        client.enableApiControl(True)
-        client.armDisarm(True)
-        #client.hoverAsync().join()
-        client.moveToZAsync(-3, 2).join()
-        #client.hoverAsync().join()
-        #client.moveByVelocityAsync(action[0,0], action[0,1], 0, 1.0).join()
+    # if done % 20 == 0:
+    #     #client.moveByVelocityAsync(0, 0, 0, 1.0).join()
+    #
+    #     print("Resetting zero")
+    #     client.reset()
+    #     print("post reset")
+    #     client.enableApiControl(True)
+    #     client.armDisarm(True)
+    #     #client.hoverAsync().join()
+    #     client.moveToZAsync(-3, 2).join()
+    #     #client.hoverAsync().join()
+    #     #client.moveByVelocityAsync(action[0,0], action[0,1], 0, 1.0).join()
 
 client.hoverAsync().join()
