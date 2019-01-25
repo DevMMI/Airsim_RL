@@ -32,7 +32,7 @@ class QNetwork:
 
         # Batch placeholders - for a tensor that will always be fed
         self.state_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.STATE_SIZE], name='state')
-        self.action_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.ACTION_SIZE], name='action')
+        self.action_ph = tf.placeholder(dtype=tf.float32, shape=[None, Settings.ACTION_SIZE], name='action')
         self.reward_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='reward')
         self.next_state_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.STATE_SIZE], name='next_state')
         self.not_done_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='not_done')

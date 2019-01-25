@@ -98,7 +98,7 @@ class Settings:
     # these are of type https://github.com/openai/gym/blob/master/gym/spaces/box.py
     # meaning that they are probability distribution
     # example right here https://github.com/alibaba/gym-starcraft/blob/master/gym_starcraft/envs/single_battle_env.py
-    ACTION_SIZE = setting_env.action_space.shape
+    ACTION_SIZE = setting_env.action_space.shape[0]
     LOW_BOUND   = setting_env.action_space.low
     HIGH_BOUND  = setting_env.action_space.high
 
