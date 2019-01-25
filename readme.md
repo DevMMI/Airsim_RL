@@ -22,3 +22,14 @@ AirSim/Unreal/Plugins/AirSim/Source/AirLib/(src/include)/api/
 
 ## An image request is formatted ##
 ImageRequest(const std::string& camera_name_val, ImageCaptureBase::ImageType image_type_val, bool pixels_as_float_val = false, bool compress_val = true)
+
+## D4PG
+
+### Continue Training from Checkpoint Issue
+
+After running a training session once and re-running, not continuing from last checkpoint. Tracing the issue:
+
+*  In *D4PG/settings.py* we have `LOAD = True`.
+*  In *utils/Saver.py* we have load function. Called in *D4PG/main.py* and our "model is loaded".
+*  Probably need to look into `self.saver.restore(self.sess, ckpt.model_checkpoint_path)` and make sure it is behaving as intended.
+*  With regards to saving, appears to be working fine. Under *D4PG\model* there is the *checkpoint* file with `model_checkpoint_path:` and `all_model_checkpoint_paths:` inside. There are also *.ckpt* files in the same folder which I assume are the weights/ checkpoints.
