@@ -49,7 +49,7 @@ class Agent:
                                             noise_summary,
                                             steps_summary])
 
-        self.writer = tf.summary.FileWriter(f"./logs/Agent_{self.n_agent}",
+        self.writer = tf.summary.FileWriter("./logs/Agent_{self.n_agent}",
                                             self.sess.graph)
 
     def build_actor(self):
