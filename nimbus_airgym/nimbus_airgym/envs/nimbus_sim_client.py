@@ -16,13 +16,18 @@ class NimbusSimClient(MultirotorClient):
     def takeAction(self, action):
         ''' takes action and returns current position, whether collided, current velocity '''
         # take action
-        self.moveByVelocityAsync(action[0], action[1], 0, 1.0).join()
+        action = action * 20.0 # denormalize action
+        #print("{} {}".format(action[0], action[1]))
+        #exit(0)
+        self.moveByVelocityAsync(float(action[0]), float(action[1]), float(0.0), float(0.3)).join()
+        #self.moveByVelocityAsync(1.0, 1.0, 0.0, 0.3).join()
 
         # get position
-        vehicle_pose = client.simGetVehiclePose().position
+        vehicle_pose = self.simGetVehiclePose().position
         pose_x = vehicle_pose.x_val
         pose_y = vehicle_pose.y_val
         pose_z = vehicle_pose.z_val
+        pose = Vector3r(pose_x, pose_y, pose_z)
 
         # get velocity
         vehicle_linear_vel = self.simGetGroundTruthKinematics().linear_velocity
@@ -34,25 +39,29 @@ class NimbusSimClient(MultirotorClient):
         if collision_info.has_collided:
            collided = True
 
+        return collided, pose, vehicle_vel
 
 
     def getObservation(self):
         # get image as floating point pixel values
-        responses = self.simGetImages([ImageRequest("front_center", airsim.ImageType.Scene, True, False)])
+        responses = self.simGetImages([ImageRequest("front_center", ImageType.Scene, True, False)])
         response = responses[0]
-        img1d = np.fromstring(response.image_data_uint8, dtype=np.uint8)
+
+
+        #img1d = np.fromstring(''.join(response.image_data_float), dtype=np.float32)
+        img1d = np.array(response.image_data_float, dtype=np.float32)
 
         # normalizing and reshaping image
-        img1d = (img1d - np.mean(img1d, axis=0)) / np.std(img1d, axis=0)
-        img_fp *= (1.0/img_rgba.max()) # normalize pixels between 0 and 1
-        img_fp = img1d.reshape(response.height, response.width)
-        img_fp = np.flipud(img_rgba) # flip upside down
+        img_fp = (img1d - np.mean(img1d, axis=0)) / np.std(img1d, axis=0)
+        img_fp *= (1.0/img_fp.max()) # normalize pixels between 0 and 1
+        img_fp = img_fp.reshape(response.height, response.width, 1)
+        img_fp = np.flipud(img_fp) # flip upside down
 
         return img_fp
 
     def resetEnv(self):
-        client.reset()
+        self.reset()
         print("post reset")
-        client.enableApiControl(True)
-        client.armDisarm(True)
-        client.moveToZAsync(-3, 2).join()
+        self.enableApiControl(True)
+        self.armDisarm(True)
+        self.moveToZAsync(-3, 2).join()

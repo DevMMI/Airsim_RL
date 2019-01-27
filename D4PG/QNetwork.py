@@ -31,6 +31,7 @@ class QNetwork:
         self.buffer = buffer
 
         # Batch placeholders - for a tensor that will always be fed
+        # None means same as '?' or variable value
         self.state_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.STATE_SIZE], name='state')
         self.action_ph = tf.placeholder(dtype=tf.float32, shape=[None, Settings.ACTION_SIZE], name='action')
         self.reward_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='reward')
@@ -74,12 +75,13 @@ class QNetwork:
         # Compute Q(s_t, a_t)
         self.Q_distrib_given_actions = build_critic(self.state_ph, self.action_ph,
                                                        trainable=True, reuse=False,
-                                                       scope='learner_critic')
+                                                       scope='learner_critic', sess=self.sess)
 
+        #print("Shape {}".format(self.sess.run(tf.shape(self.actions))))
         # Compute Q(s_t, A(s_t)) with the same network, reuses the weights of the above
         self.Q_distrib_suggested_actions = build_critic(self.state_ph, self.actions,
                                                        trainable=True, reuse=True,
-                                                       scope='learner_critic')
+                                                       scope='learner_critic', sess=self.sess)
 
         # Turn the distribution into value Qval(s_t, A(s_t))
         self.Q_values_suggested_actions = tf.reduce_sum(self.z * self.Q_distrib_suggested_actions, axis=1)
@@ -97,7 +99,7 @@ class QNetwork:
         # Compute Q_target( s_{t+1}, A(s_{t+1}) )
         self.Q_distrib_next = build_critic(self.next_state_ph, self.target_next_actions,
                                            trainable=False, reuse=False,
-                                           scope='learner_target_critic')
+                                           scope='learner_target_critic', sess=self.sess)
 
     def build_update(self):
         """

@@ -16,7 +16,7 @@ def build_actor(states, trainable, scope):
         scope    : the name of the tensorflow scope
     """
     with tf.variable_scope(scope):
-
+        #
         layer = states
 
         # Convolution layers
@@ -41,12 +41,15 @@ def build_actor(states, trainable, scope):
                                            trainable=trainable,
                                            name='dense_last')
         # Bound the actions to the valid range
+        print("High bound {}, Low bound {}".format(Settings.HIGH_BOUND, Settings.LOW_BOUND))
+        print("shape {}".format(Settings.HIGH_BOUND.shape))
+
         valid_range = Settings.HIGH_BOUND - Settings.LOW_BOUND
-        actions = Settings.LOW_BOUND + tf.nn.sigmoid(actions_unscaled) * valid_range
+        actions = Settings.LOW_BOUND + (tf.nn.sigmoid(actions_unscaled) * valid_range)
     return actions
 
 
-def build_critic(states, actions, trainable, reuse, scope):
+def build_critic(states, actions, trainable, reuse, scope, sess):
     """
     Define a critic network that predicts the Q-value of a given state and a
     given action Q(states, actions). This is obtained by feeding the network
@@ -65,27 +68,23 @@ def build_critic(states, actions, trainable, reuse, scope):
     """
     with tf.variable_scope(scope):
 
-
-        # state is (144,256), action is (2)
-        action_expanded = tf.expand_dims(actions, 1) # adds a second dimension, now shape (2,1)
-        padding = tf.constant([[71, 71], [0, 0]]) # add 71 row before and after, no cols
-        tf.pad(action_expanded, padding, 'CONSTANT') # now shape (144, 1)
-
-        layer = tf.concat([states, action_expanded], axis=1)
+        # necessary reshape to get actions compatible for concat
+        actions = tf.reshape(actions, [tf.shape(actions)[0], 2, tf.shape(states)[2], tf.shape(states)[3]] )
+        layer = tf.concat([states, actions], axis=1)
 
         # Convolution layers
         if hasattr(Settings, 'CONV_LAYERS') and Settings.CONV_LAYERS:
             for i, layer_settings in enumerate(Settings.CONV_LAYERS):
                 layer = tf.layers.conv2d(inputs=layer,
                                          activation=tf.nn.relu,
-                                         trainable=trainable,
                                          reuse=reuse,
+                                         trainable=trainable,
                                          name='conv_'+str(i),
                                          **layer_settings)
 
             layer = tf.layers.flatten(layer)
 
-        # Fully connected layers
+    # Fully connected layers
         for i, nb_neurons in enumerate(Settings.HIDDEN_CRITIC_LAYERS):
             layer = tf.layers.dense(layer, nb_neurons,
                                     trainable=trainable,

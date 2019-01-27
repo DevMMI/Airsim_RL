@@ -84,7 +84,10 @@ class Agent:
         """
         Wrapper method to get the action outputted by the actor network.
         """
-        return self.sess.run(self.policy, feed_dict={self.state_ph: s[None]})[0]
+        a = self.sess.run(self.policy, feed_dict={self.state_ph: s[None]})
+        #TODO {output of self.policy not following sigmoid activation and is sometimes less than zero or greater than one}
+        print("act {}".format(a))
+        return a
 
     def run(self):
         """
@@ -112,9 +115,6 @@ class Agent:
 
             noise_scale = Settings.NOISE_SCALE * Settings.NOISE_DECAY**(self.nb_ep//20)
 
-            # Render Settings
-            self.env.set_render(self.gui.render.get(self.nb_ep))
-            self.env.set_gif(self.gui.gif.get(self.nb_ep))
 
             while episode_step < max_step and not done and not self.gui.STOP:
 

@@ -59,18 +59,8 @@ class Environment:
             self.name_gif = name
 
     def reset(self):
-        if self.gif:
-            self.save_gif()
-
         # If pixex input, we reset the image buffer with random states
-        if self.pixel_input:
-            self.env.reset()
-            for i in range(4):
-                s, r, d, i = self.env.step(self.act_random())
-                self.frame_buffer.append(self.process(s))
-            return np.transpose(self.frame_buffer, (1, 2, 0))
-        else:
-            return self.env.reset()
+        return self.env.reset()
 
     def act_random(self):
         """
@@ -84,24 +74,11 @@ class Environment:
         """
         r, i, done = 0, 0, False
         while i < (Settings.FRAME_SKIP + 1) and not done:
-            if self.render:
-                self.env.render()
-
-            if self.gif:
-                # Add image to the memory list
-                img = Image.fromarray(self.env.render(mode='rgb_array'))
-                img.save('tmp.png')
-                self.images.append(imageio.imread('tmp.png'))
-
             s_, r_tmp, done, info = self.env.step(action)
             r += r_tmp
             i += 1
 
-        if self.pixel_input:
-            self.frame_buffer.append(self.process(s_))
-            return np.transpose(self.frame_buffer, (1, 2, 0)), r, done, info
-        else:
-            return s_, r, done, info
+        return s_, r, done, info
 
     def save_gif(self):
         """

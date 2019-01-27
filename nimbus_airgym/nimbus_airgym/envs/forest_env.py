@@ -14,15 +14,16 @@ from airsim import *
 class ForestEnv(gym.Env):
 
     airgym = None
-    ceiling = -25
-    radius = 30
+
 
     def __init__(self):
-        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256), dtype=np.float16)
-        self.state = np.zeros((144, 256), dtype=np.float16)
-        self.action_space = spaces.Box(low=0.0, high=1.0, shape=(2,), dtype=np.float16)
+        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256, 1), dtype=np.float32)
+        self.state = np.zeros((144, 256), dtype=np.float32)
+        self.action_space = spaces.Box(low=0.0, high=1.0, shape=(2,), dtype=np.float32)
         self.episodeN = 0
         self.stepN = 0
+        self.ceiling = -25
+        self.radius = 30
 
         global airgym
         airgym = NimbusSimClient()
@@ -30,14 +31,15 @@ class ForestEnv(gym.Env):
     def step(self, action):
         ''' takes action, environment returns an observation and reward,
             returns observation, reward, done and info values '''
-        assert self.action_space.contains(action), "%r (%s) invalid"%(action, type(action))
+        assert self.action_space.contains(action[0]), "%r (%s) invalid"%(action, type(action))
+        action = action[0]
 
         (collided, position, velocity) = airgym.takeAction(action)
         reward = self.computeReward(collided, position, velocity)
 
         self.state = airgym.getObservation()
 
-        return self.state, reward, done, {}
+        return self.state, reward, 0, {}
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -50,18 +52,27 @@ class ForestEnv(gym.Env):
         # Returns
             observation (object): The initial observation of the space. Initial reward is assumed to be 0.
         """
+        print("hit env internal reset")
+
         self.stepN = 0
         self.episodeN += 1
 
         airgym.resetEnv()
-        self.state = airgym.getObservation
+        self.state = airgym.getObservation()
         return self.state
 
     def computeReward(self, collided, position, velocity):
+        global ceiling
         distance = sqrt(position.x_val**2 + position.y_val**2)
         if collided:
             return -50
-        if position.z_val < ceiling or distance > radius:
-            return -5
+
+        if velocity > 10:
+            reward = 3
         else:
-            return 5
+            reward = -3
+
+        if position.z_val < self.ceiling or distance > self.radius:
+            return -5 + reward
+        else:
+            return 5 + reward
