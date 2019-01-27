@@ -86,7 +86,6 @@ class Agent:
         """
         a = self.sess.run(self.policy, feed_dict={self.state_ph: s[None]})
         #TODO {output of self.policy not following sigmoid activation and is sometimes less than zero or greater than one}
-        print("act {}".format(a))
         return a
 
     def run(self):
@@ -124,8 +123,10 @@ class Agent:
 
                 # Add gaussian noise
                 noise = np.random.normal(size=Settings.ACTION_SIZE)
+                #noise = tf.nn.sigmoid(noise)
 
                 a += noise_scale * noise
+                #a =
                 s_, r, done, _ = self.env.act(a)
                 episode_reward += r
 

@@ -208,8 +208,13 @@ class QNetwork:
 
                 batch = np.asarray(self.buffer.sample())
 
+                print("shapes state {}".format(np.stack(batch[:, 0]).shape) )
+                print("shapes action {}".format(np.stack(batch[:, 1]).shape))
+                print("shapes reward {}".format(np.stack(batch[:, 2]).shape))
+                print("shapes next_state {}".format(np.stack(batch[:, 3]).shape))
+                print("shapes not_done {}".format(np.stack(batch[:, 4]).shape))
                 feed_dict = {self.state_ph: np.stack(batch[:, 0]),
-                             self.action_ph: np.stack(batch[:, 1]),
+                             self.action_ph: np.stack(batch[:, 1][0]),
                              self.reward_ph: batch[:, 2],
                              self.next_state_ph: np.stack(batch[:, 3]),
                              self.not_done_ph: batch[:, 4]}

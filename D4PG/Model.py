@@ -41,9 +41,6 @@ def build_actor(states, trainable, scope):
                                            trainable=trainable,
                                            name='dense_last')
         # Bound the actions to the valid range
-        print("High bound {}, Low bound {}".format(Settings.HIGH_BOUND, Settings.LOW_BOUND))
-        print("shape {}".format(Settings.HIGH_BOUND.shape))
-
         valid_range = Settings.HIGH_BOUND - Settings.LOW_BOUND
         actions = Settings.LOW_BOUND + (tf.nn.sigmoid(actions_unscaled) * valid_range)
     return actions
@@ -67,9 +64,22 @@ def build_critic(states, actions, trainable, reuse, scope, sess):
         scope    : the name of the tensorflow scope
     """
     with tf.variable_scope(scope):
+        # example feed dict
+        # shapes state (1, 144, 256, 1)
+        # shapes action (1, 1, 2)
+        # shapes reward (1,)
+        # shapes next_state (1, 144, 256, 1)
+        # shapes not_done (1,)
 
-        # necessary reshape to get actions compatible for concat
-        actions = tf.reshape(actions, [tf.shape(actions)[0], 2, tf.shape(states)[2], tf.shape(states)[3]] )
+        # shapes state (3, 144, 256, 1)
+        # shapes action (3, 1, 2)
+        # shapes reward (3,)
+        # shapes next_state (3, 144, 256, 1)
+        # shapes not_done (3,)
+
+        # necessary paddings to get actions compatible for concat with state
+        actions = tf.expand_dims(actions, 3)
+        actions = tf.pad(actions, [[0, 0], [0, tf.shape(states)[1]-1] , [0, tf.shape(states)[2]-2], [0, tf.shape(states)[3]-1]] )
         layer = tf.concat([states, actions], axis=1)
 
         # Convolution layers

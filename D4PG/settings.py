@@ -48,7 +48,7 @@ class Settings:
     DISCOUNT_N    = DISCOUNT ** N_STEP_RETURN
 
     MIN_Q = -2000
-    MAX_Q = 0
+    MAX_Q = 2000
 
     BUFFER_SIZE = 100000
     BATCH_SIZE  = 64

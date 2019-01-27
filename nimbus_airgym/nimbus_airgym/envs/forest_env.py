@@ -19,7 +19,7 @@ class ForestEnv(gym.Env):
     def __init__(self):
         self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256, 1), dtype=np.float32)
         self.state = np.zeros((144, 256), dtype=np.float32)
-        self.action_space = spaces.Box(low=0.0, high=1.0, shape=(2,), dtype=np.float32)
+        self.action_space = spaces.Box(low=0.0, high=1.0, shape=(1, 2), dtype=np.float32)
         self.episodeN = 0
         self.stepN = 0
         self.ceiling = -25
@@ -31,7 +31,6 @@ class ForestEnv(gym.Env):
     def step(self, action):
         ''' takes action, environment returns an observation and reward,
             returns observation, reward, done and info values '''
-        assert self.action_space.contains(action[0]), "%r (%s) invalid"%(action, type(action))
         action = action[0]
 
         (collided, position, velocity) = airgym.takeAction(action)
@@ -39,7 +38,7 @@ class ForestEnv(gym.Env):
 
         self.state = airgym.getObservation()
 
-        return self.state, reward, 0, {}
+        return self.state, reward, 0.0, {}
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -65,14 +64,14 @@ class ForestEnv(gym.Env):
         global ceiling
         distance = sqrt(position.x_val**2 + position.y_val**2)
         if collided:
-            return -50
+            return -50.0
 
         if velocity > 10:
-            reward = 3
+            reward = 3.0
         else:
-            reward = -3
+            reward = -3.0
 
         if position.z_val < self.ceiling or distance > self.radius:
-            return -5 + reward
+            return -5.0 + reward
         else:
-            return 5 + reward
+            return 5.0 + reward
