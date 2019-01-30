@@ -18,12 +18,12 @@ class ForestEnv(gym.Env):
 
     def __init__(self):
         self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256, 1), dtype=np.float32)
-        self.state = np.zeros((144, 256), dtype=np.float32)
+        self.state = np.zeros((144, 256, 1), dtype=np.float32)
         self.action_space = spaces.Box(low=0.0, high=1.0, shape=(1, 2), dtype=np.float32)
         self.episodeN = 0
         self.stepN = 0
         self.ceiling = -25
-        self.radius = 30
+        self.radius = 60
 
         global airgym
         airgym = NimbusSimClient()
@@ -37,8 +37,10 @@ class ForestEnv(gym.Env):
         reward = self.computeReward(collided, position, velocity)
 
         self.state = airgym.getObservation()
+        if(self.state.max() == 0.0):
+            return self.state, reward, 0.0, {}, 1
 
-        return self.state, reward, 0.0, {}
+        return self.state, reward, 0.0, {}, 0
 
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
@@ -51,7 +53,6 @@ class ForestEnv(gym.Env):
         # Returns
             observation (object): The initial observation of the space. Initial reward is assumed to be 0.
         """
-        print("hit env internal reset")
 
         self.stepN = 0
         self.episodeN += 1
@@ -64,14 +65,16 @@ class ForestEnv(gym.Env):
         global ceiling
         distance = sqrt(position.x_val**2 + position.y_val**2)
         if collided:
-            return -50.0
+            reward = -50.0
+        else:
+            reward = 0
 
         if velocity > 10:
-            reward = 3.0
+            reward+=3.0
         else:
-            reward = -3.0
+            reward-=3.0
 
         if position.z_val < self.ceiling or distance > self.radius:
-            return -5.0 + reward
+            return -60.0 + reward
         else:
             return 5.0 + reward

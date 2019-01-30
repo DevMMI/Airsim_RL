@@ -43,6 +43,7 @@ def build_actor(states, trainable, scope):
         # Bound the actions to the valid range
         valid_range = Settings.HIGH_BOUND - Settings.LOW_BOUND
         actions = Settings.LOW_BOUND + (tf.nn.sigmoid(actions_unscaled) * valid_range)
+        print("Shapes b {}".format(actions.shape))
     return actions
 
 
@@ -78,9 +79,14 @@ def build_critic(states, actions, trainable, reuse, scope, sess):
         # shapes not_done (3,)
 
         # necessary paddings to get actions compatible for concat with state
+        print("a state {}".format(states.shape))
+        print("a action {}".format(actions.shape))
         actions = tf.expand_dims(actions, 3)
-        actions = tf.pad(actions, [[0, 0], [0, tf.shape(states)[1]-1] , [0, tf.shape(states)[2]-2], [0, tf.shape(states)[3]-1]] )
+        #actions = tf.expand_dims(actions, 3)
+        actions = tf.pad(actions, [[0, 0], [0, 0] , [0, 254], [0, 0]] )
         layer = tf.concat([states, actions], axis=1)
+
+        print("state shape {}, action shape {}".format(states.shape, actions.shape))
 
         # Convolution layers
         if hasattr(Settings, 'CONV_LAYERS') and Settings.CONV_LAYERS:

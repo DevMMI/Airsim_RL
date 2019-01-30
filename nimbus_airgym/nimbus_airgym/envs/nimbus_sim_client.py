@@ -44,20 +44,29 @@ class NimbusSimClient(MultirotorClient):
 
     def getObservation(self):
         # get image as floating point pixel values
-        responses = self.simGetImages([ImageRequest("front_center", ImageType.Scene, True, False)])
-        response = responses[0]
+        try:
+            responses = self.simGetImages([ImageRequest("front_center", ImageType.Scene, True, False)])
+            response = responses[0]
 
 
-        #img1d = np.fromstring(''.join(response.image_data_float), dtype=np.float32)
-        img1d = np.array(response.image_data_float, dtype=np.float32)
+            #img1d = np.fromstring(''.join(response.image_data_float), dtype=np.float32)
+            img1d = np.array(response.image_data_float, dtype=np.float32)
 
-        # normalizing and reshaping image
-        img_fp = (img1d - np.mean(img1d, axis=0)) / np.std(img1d, axis=0)
-        img_fp *= (1.0/img_fp.max()) # normalize pixels between 0 and 1
-        img_fp = img_fp.reshape(response.height, response.width, 1)
-        img_fp = np.flipud(img_fp) # flip upside down
+            # normalizing and reshaping image
+            std_fp = np.std(img1d, axis=0)
+            if(std_fp == 0):
+                std_fp = np.ones(img1d.shape[0])
+            img_fp = (img1d - np.mean(img1d, axis=0)) / std_fp
+            max_fp = img_fp.max()
+            if(max_fp == 0):
+                max_fp = 1.0
+            img_fp *= (1.0/max_fp) # normalize pixels between 0 and 1
+            img_fp = img_fp.reshape(response.height, response.width, 1)
+            img_fp = np.flipud(img_fp) # flip upside down
 
-        return img_fp
+            return img_fp
+        except:
+            return np.zeros((1,1))
 
     def resetEnv(self):
         self.reset()

@@ -33,7 +33,7 @@ class QNetwork:
         # Batch placeholders - for a tensor that will always be fed
         # None means same as '?' or variable value
         self.state_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.STATE_SIZE], name='state')
-        self.action_ph = tf.placeholder(dtype=tf.float32, shape=[None, Settings.ACTION_SIZE], name='action')
+        self.action_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.ACTION_SHAPE], name='action')
         self.reward_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='reward')
         self.next_state_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.STATE_SIZE], name='next_state')
         self.not_done_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='not_done')
@@ -71,6 +71,11 @@ class QNetwork:
 
         # Compute A(s_t)
         self.actions = build_actor(self.state_ph, trainable=True, scope='learner_actor')
+        print("1 intermediate action shape {}".format(self.actions.shape))
+
+        self.actions = tf.expand_dims(self.actions, 1)
+        print("1 intermediate action shape {}".format(self.actions.shape))
+
 
         # Compute Q(s_t, a_t)
         self.Q_distrib_given_actions = build_critic(self.state_ph, self.action_ph,
@@ -95,6 +100,10 @@ class QNetwork:
         self.target_next_actions = build_actor(self.next_state_ph,
                                                trainable=False,
                                                scope='learner_target_actor')
+        #print("3 intermediate action shape {}".format(self.target_next_actions.shape))
+
+        self.target_next_actions = tf.expand_dims(self.target_next_actions, 1)
+        #print("3 intermediate action shape {}".format(self.target_next_actions.shape))
 
         # Compute Q_target( s_{t+1}, A(s_{t+1}) )
         self.Q_distrib_next = build_critic(self.next_state_ph, self.target_next_actions,
@@ -208,13 +217,13 @@ class QNetwork:
 
                 batch = np.asarray(self.buffer.sample())
 
-                print("shapes state {}".format(np.stack(batch[:, 0]).shape) )
-                print("shapes action {}".format(np.stack(batch[:, 1]).shape))
-                print("shapes reward {}".format(np.stack(batch[:, 2]).shape))
-                print("shapes next_state {}".format(np.stack(batch[:, 3]).shape))
-                print("shapes not_done {}".format(np.stack(batch[:, 4]).shape))
+                #print("shapes state {}".format(np.stack(batch[:, 0]).shape) )
+                #print("shapes action {}".format(np.stack(batch[:, 1]).shape))
+                #print("shapes reward {}".format(np.stack(batch[:, 2]).shape))
+                #print("shapes next_state {}".format(np.stack(batch[:, 3]).shape))
+                #print("shapes not_done {}".format(np.stack(batch[:, 4]).shape))
                 feed_dict = {self.state_ph: np.stack(batch[:, 0]),
-                             self.action_ph: np.stack(batch[:, 1][0]),
+                             self.action_ph: np.stack(batch[:, 1]),
                              self.reward_ph: batch[:, 2],
                              self.next_state_ph: np.stack(batch[:, 3]),
                              self.not_done_ph: batch[:, 4]}

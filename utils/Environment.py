@@ -74,11 +74,11 @@ class Environment:
         """
         r, i, done = 0, 0, False
         while i < (Settings.FRAME_SKIP + 1) and not done:
-            s_, r_tmp, done, info = self.env.step(action)
+            s_, r_tmp, done, info, e = self.env.step(action)
             r += r_tmp
             i += 1
 
-        return s_, r, done, info
+        return s_, r, done, info, e
 
     def save_gif(self):
         """

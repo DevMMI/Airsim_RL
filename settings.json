@@ -1,4 +1,4 @@
-{ "SettingsVersion": 1, "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md", "SimMode": "Multirotor", "ClockSpeed": 10,
+{ "SettingsVersion": 1, "SeeDocsAt": "https://github.com/Microsoft/AirSim/blob/master/docs/settings.md", "SimMode": "Multirotor", "ClockSpeed": 100,
 "Recording": {
     "RecordOnMove": false,
     "RecordInterval": 0.05,

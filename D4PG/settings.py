@@ -15,7 +15,7 @@ class Settings:
 
     TRAINING_EPS  = 1000
 
-    MAX_EPISODE_STEPS = 2000
+    MAX_EPISODE_STEPS = 40
     FRAME_SKIP        = 0
     EP_ELONGATION     = 10
 
@@ -95,10 +95,12 @@ class Settings:
     #     STATE_SIZE = [84, 84, 4]
     # else:
         STATE_SIZE  = list(setting_env.observation_space.shape)
+        #FIRST_TENSOR_SIZE = [None, STATE_SIZE]
     # these are of type https://github.com/openai/gym/blob/master/gym/spaces/box.py
     # meaning that they are probability distribution
     # example right here https://github.com/alibaba/gym-starcraft/blob/master/gym_starcraft/envs/single_battle_env.py
-    ACTION_SIZE = setting_env.action_space.shape[0]
+    ACTION_SHAPE = list(setting_env.action_space.shape)
+    ACTION_SIZE = setting_env.action_space.shape[1]
     LOW_BOUND   = setting_env.action_space.low
     HIGH_BOUND  = setting_env.action_space.high
 

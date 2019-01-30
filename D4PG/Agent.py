@@ -98,9 +98,11 @@ class Agent:
 
         self.total_steps = 0
         self.nb_ep = 1
+        episode_reward = 0
 
         while self.nb_ep < Settings.TRAINING_EPS and not self.gui.STOP:
-
+            print("last episode total reward {}".format(episode_reward))
+            print("Episode {}".format(self.nb_ep))
             s = self.env.reset()
             episode_reward = 0
             done = False
@@ -121,15 +123,21 @@ class Agent:
                 a = np.clip(self.predict_action(s),
                             Settings.LOW_BOUND, Settings.HIGH_BOUND)
 
+
+
                 # Add gaussian noise
                 noise = np.random.normal(size=Settings.ACTION_SIZE)
                 #noise = tf.nn.sigmoid(noise)
 
                 a += noise_scale * noise
                 #a =
-                s_, r, done, _ = self.env.act(a)
+                s_, r, done, _, error = self.env.act(a)
+                if error:
+                    continue
+
                 episode_reward += r
 
+                print("Reward received {}, episode reward {}".format(r, episode_reward))
                 memory.append((s, a, r))
 
                 # Keep the experience in memory until 'N_STEP_RETURN' steps has
