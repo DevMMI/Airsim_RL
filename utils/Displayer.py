@@ -68,6 +68,7 @@ class Displayer:
             n_agent: the number of the agent that collected this reward
             plot   : whether the graph must be displayed or not
         """
+        print("adding reward")
         self.rewards[n_agent].append(reward)
         if plot:
             self.disp()
@@ -80,10 +81,9 @@ class Displayer:
         if mode not in ('one', 'seq', 'all'):
             print("Error : this display mode is not supported.")
             return
-
+        mode='one'
         if mode == 'one':
-            curves = [(Settings.RESULTS_PATH + "Reward", self.rewards[0]),
-                      (Settings.RESULTS_PATH + "Mean_reward", self.mean(self.rewards[0]))]
+            curves = [(Settings.RESULTS_PATH + "Reward", self.rewards[0])]
             fig_name = Settings.RESULTS_PATH + "Reward.png"
 
         elif mode == 'seq':

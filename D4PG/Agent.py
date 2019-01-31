@@ -102,9 +102,8 @@ class Agent:
 
         while self.nb_ep < Settings.TRAINING_EPS and not self.gui.STOP:
             #print("last episode total reward {}".format(episode_reward))
-            #print("Episode {}".format(self.nb_ep))
+            print("Episode {}".format(self.nb_ep))
             s = self.env.reset()
-            #episode_rewards.append(episode_reward)
             episode_reward = 0
             done = False
 
@@ -131,7 +130,7 @@ class Agent:
                 #noise = tf.nn.sigmoid(noise)
 
                 a += noise_scale * noise
-                #print("Action {} {}".format(a[0][0], a[0][1]))
+                #a =
                 s_, r, done, _, error = self.env.act(a)
                 if error:
                     continue
@@ -158,10 +157,10 @@ class Agent:
                 self.sess.run(self.update)
 
             if not self.gui.STOP:
-                if self.n_agent == 1 and self.gui.ep_reward.get(self.nb_ep):
+                if self.n_agent == 0: #and self.gui.ep_reward.get(self.nb_ep):
                     print("Episode %i : reward %i, steps %i, noise scale %f" % (self.nb_ep, episode_reward, episode_step, noise_scale))
 
-                plot = (self.n_agent == 1 and self.gui.plot.get(self.nb_ep))
+                plot = (self.n_agent == 0)
                 self.displayer.add_reward(episode_reward, self.n_agent, plot=plot)
 
                 # Write the summary
@@ -171,6 +170,6 @@ class Agent:
                 summary = self.sess.run(self.ep_summary, feed_dict=feed_dict)
                 self.writer.add_summary(summary, self.nb_ep)
 
-                self.nb_ep += 1
+            self.nb_ep += 1
 
         self.env.close()

@@ -13,7 +13,7 @@ TOTAL_EPS = 0
 
 class QNetwork:
 
-    def __init__(self, sess, gui, saver, buffer, episode_rewards):
+    def __init__(self, sess, gui, saver, buffer, displayer):
         """
         Creation of the main and target networks and of the tensorflow
         operations to apply a gradient descent and update the target network.
@@ -29,6 +29,8 @@ class QNetwork:
         self.gui = gui
         self.saver = saver
         self.buffer = buffer
+        self.displayer = displayer
+        self.saved_ep = 0
 
         # Batch placeholders - for a tensor that will always be fed
         # None means same as '?' or variable value
@@ -37,6 +39,8 @@ class QNetwork:
         self.reward_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='reward')
         self.next_state_ph = tf.placeholder(dtype=tf.float32, shape=[None, *Settings.STATE_SIZE], name='next_state')
         self.not_done_ph = tf.placeholder(dtype=tf.float32, shape=[None], name='not_done')
+
+
 
         # Turn these in column vector
         self.reward = tf.expand_dims(self.reward_ph, 1) # add a dimension at the index 1 place
@@ -202,7 +206,7 @@ class QNetwork:
         experience buffer.
         """
         global TOTAL_EPS
-
+        current_saved = -1
         self.total_eps = 1
         start_time = time.time()
 
@@ -228,13 +232,19 @@ class QNetwork:
                              self.next_state_ph: np.stack(batch[:, 3]),
                              self.not_done_ph: batch[:, 4]}
 
-                self.sess.run([self.critic_train_op, self.actor_train_op],feed_dict=feed_dict)
+                self.sess.run([self.critic_train_op, self.actor_train_op],
+                               feed_dict=feed_dict)
+
 
                 if self.total_eps % Settings.UPDATE_TARGET_FREQ == 0:
                     self.sess.run(self.target_update)
-                #
-                # if self.gui.save.get(self.total_eps):
-                #     self.saver.save(self.total_e)
+
+                #print("Total episodes of Agent are {}".format(len(self.displayer.rewards[0])))
+
+                if current_saved != len(self.displayer.rewards[0]) and len(self.displayer.rewards[0]) % 5 == 0:
+                    self.saver.save(len(self.displayer.rewards[0]))
+                    current_saved = len(self.displayer.rewards[0])
+
 
                 # print("Learning ep : ", self.total_eps)
                 self.total_eps += 1
