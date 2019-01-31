@@ -6,6 +6,7 @@ from gym import spaces
 from gym.spaces import Dict
 from gym.spaces.box import Box
 from nimbus_airgym.envs.nimbus_sim_client import *
+import math
 from math import sqrt
 #from AirSimClient import *
 from airsim import *
@@ -17,9 +18,9 @@ class ForestEnv(gym.Env):
 
 
     def __init__(self):
-        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256, 1), dtype=np.float32)
-        self.state = np.zeros((144, 256, 1), dtype=np.float32)
-        self.action_space = spaces.Box(low=0.0, high=1.0, shape=(1, 2), dtype=np.float32)
+        self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256, 1), dtype=np.float16)
+        self.state = np.zeros((144, 256, 1), dtype=np.float16)
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(1, 2), dtype=np.float16)
         self.episodeN = 0
         self.stepN = 0
         self.ceiling = -25
@@ -67,14 +68,21 @@ class ForestEnv(gym.Env):
         if collided:
             reward = -50.0
         else:
-            reward = 0
+            reward = 10
 
-        if velocity > 10:
-            reward+=3.0
-        else:
-            reward-=3.0
+        # velocity greater than 0 is favored, peaks around 20
+        reward += 10.0 * math.tanh(0.1 * velocity)
 
-        if position.z_val < self.ceiling or distance > self.radius:
-            return -60.0 + reward
-        else:
-            return 5.0 + reward
+        # punish as drone goes further above ceiling
+        if position.z_val < self.ceiling:
+            difference = -1.0 * float(self.ceiling - position.z_val)
+            # more negative difference is worse
+            reward += 50.0 * math.tanh(0.05 * difference)
+
+
+        if distance > self.radius:
+            difference = distance - self.radius
+            # more positive difference is worse
+            reward += -50 * math.tanh(0.05 * difference)
+
+        return reward

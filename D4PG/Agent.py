@@ -101,9 +101,10 @@ class Agent:
         episode_reward = 0
 
         while self.nb_ep < Settings.TRAINING_EPS and not self.gui.STOP:
-            print("last episode total reward {}".format(episode_reward))
-            print("Episode {}".format(self.nb_ep))
+            #print("last episode total reward {}".format(episode_reward))
+            #print("Episode {}".format(self.nb_ep))
             s = self.env.reset()
+            #episode_rewards.append(episode_reward)
             episode_reward = 0
             done = False
 
@@ -130,14 +131,14 @@ class Agent:
                 #noise = tf.nn.sigmoid(noise)
 
                 a += noise_scale * noise
-                #a =
+                #print("Action {} {}".format(a[0][0], a[0][1]))
                 s_, r, done, _, error = self.env.act(a)
                 if error:
                     continue
 
                 episode_reward += r
 
-                print("Reward received {}, episode reward {}".format(r, episode_reward))
+                #print("Reward received {}, episode reward {}".format(r, episode_reward))
                 memory.append((s, a, r))
 
                 # Keep the experience in memory until 'N_STEP_RETURN' steps has

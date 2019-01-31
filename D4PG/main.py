@@ -65,14 +65,14 @@ if __name__ == '__main__':
 
         gui = GUI.Interface(['ep_reward', 'plot', 'render', 'gif', 'save'])
         gui_thread = threading.Thread(target=gui.run)
-
+        episode_rewards = []
         threads = []
         # create agents for each cpu core we have available
         for i in range(Settings.NB_ACTORS):
-            agent = Agent(sess, i, gui, displayer, buffer)
+            agent = Agent(sess, i, gui, displayer, buffer, episode_rewards)
             threads.append(threading.Thread(target=agent.run))
 
-        # with tf.device('/device:GPU:0'):
+        #with tf.device('/device:GPU:0'):
         learner = QNetwork(sess, gui, saver, buffer)
         threads.append(threading.Thread(target=learner.run))
 

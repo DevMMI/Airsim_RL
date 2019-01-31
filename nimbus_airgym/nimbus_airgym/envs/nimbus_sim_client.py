@@ -17,8 +17,8 @@ class NimbusSimClient(MultirotorClient):
         ''' takes action and returns current position, whether collided, current velocity '''
         # take action
         action = action * 20.0 # denormalize action
-        #print("{} {}".format(action[0], action[1]))
-        #exit(0)
+        print("{} {}".format(action[0], action[1]))
+
         self.moveByVelocityAsync(float(action[0]), float(action[1]), float(0.0), float(0.3)).join()
         #self.moveByVelocityAsync(1.0, 1.0, 0.0, 0.3).join()
 
@@ -50,7 +50,7 @@ class NimbusSimClient(MultirotorClient):
 
 
             #img1d = np.fromstring(''.join(response.image_data_float), dtype=np.float32)
-            img1d = np.array(response.image_data_float, dtype=np.float32)
+            img1d = np.array(response.image_data_float, dtype=np.float16)
 
             # normalizing and reshaping image
             std_fp = np.std(img1d, axis=0)

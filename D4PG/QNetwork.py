@@ -13,7 +13,7 @@ TOTAL_EPS = 0
 
 class QNetwork:
 
-    def __init__(self, sess, gui, saver, buffer):
+    def __init__(self, sess, gui, saver, buffer, episode_rewards):
         """
         Creation of the main and target networks and of the tensorflow
         operations to apply a gradient descent and update the target network.
@@ -228,14 +228,13 @@ class QNetwork:
                              self.next_state_ph: np.stack(batch[:, 3]),
                              self.not_done_ph: batch[:, 4]}
 
-                self.sess.run([self.critic_train_op, self.actor_train_op],
-                               feed_dict=feed_dict)
+                self.sess.run([self.critic_train_op, self.actor_train_op],feed_dict=feed_dict)
 
                 if self.total_eps % Settings.UPDATE_TARGET_FREQ == 0:
                     self.sess.run(self.target_update)
-
-                if self.gui.save.get(self.total_eps):
-                    self.saver.save(self.total_eps)
+                #
+                # if self.gui.save.get(self.total_eps):
+                #     self.saver.save(self.total_e)
 
                 # print("Learning ep : ", self.total_eps)
                 self.total_eps += 1
