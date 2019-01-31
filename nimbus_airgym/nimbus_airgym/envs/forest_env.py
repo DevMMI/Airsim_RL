@@ -19,7 +19,7 @@ class ForestEnv(gym.Env):
     def __init__(self):
         self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256, 1), dtype=np.float32)
         self.state = np.zeros((144, 256, 1), dtype=np.float32)
-        self.action_space = spaces.Box(low=0.0, high=1.0, shape=(1, 2), dtype=np.float32)
+        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(1, 2), dtype=np.float32)
         self.episodeN = 0
         self.stepN = 0
         self.ceiling = -25
