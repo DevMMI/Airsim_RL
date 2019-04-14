@@ -68,25 +68,22 @@ class ForestEnv(gym.Env):
         if collided:
             return 50.0
         else:
-            reward = -10
-        reward = 0
+
+            reward = 10
 
         # velocity greater than 0 is favored, peaks around 20
-        #reward += 10.0 * math.tanh(0.1 * velocity)
-        #reward += velocity
-        #reward = 5
+        reward += 10.0 * math.tanh(0.1 * velocity)
 
-        reward += (0.5 * distance)
-        # reward as drone goes further above ceiling
-        # if position.z_val < self.ceiling:
-        #     difference = float(self.ceiling - position.z_val)
-        #     # more positive difference is worse
-        #     reward += (-50.0 * math.tanh(0.05 * difference))
-        #
-        #
-        # if distance > self.radius:
-        #     difference = distance - self.radius
-        #     # more positive difference is worse
-        #     reward += (-50 * math.tanh(0.05 * difference))
+        # punish as drone goes further above ceiling
+        if position.z_val < self.ceiling:
+            difference = -1.0 * float(self.ceiling - position.z_val)
+            # more negative difference is worse
+            reward += 50.0 * math.tanh(0.05 * difference)
+
+
+        if distance > self.radius:
+            difference = distance - self.radius
+            # more positive difference is worse
+            reward += -50 * math.tanh(0.05 * difference)
 
         return reward
