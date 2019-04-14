@@ -37,7 +37,8 @@ class Sess(tf.Session):
 #                                                                              #
 ################################################################################
 
-
+config = tf.ConfigProto()
+config.gpu_options.allow_growth = True
 if __name__ == '__main__':
 
     tf.reset_default_graph()
@@ -57,7 +58,9 @@ if __name__ == '__main__':
             # sess  : the main tensorflow session in which to create the networks
             # saver : a Saver instance to save the network weights
             # buffer: the buffer that keeps the experiences to learn from
-    with tf.Session() as sess:
+
+    with tf.Session(config=config) as sess:
+    #with tf.Session() as sess:
 
         saver = Saver.Saver(sess)
         displayer = Displayer.Displayer()

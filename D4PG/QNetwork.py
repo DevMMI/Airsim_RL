@@ -192,7 +192,7 @@ class QNetwork:
 
         # Gradient descent
         critic_trainer = tf.train.AdamOptimizer(Settings.CRITIC_LEARNING_RATE)
-        self.critic_train_op = critic_trainer.minimize(critic_loss)
+        self.critic_train_op = critic_trainer.minimize(critic_loss, var_list=self.critic_vars)
 
         # Actor loss and optimization
         self.action_grad = tf.gradients(self.Q_values_suggested_actions, self.actions)[0]
@@ -241,7 +241,7 @@ class QNetwork:
 
                 #print("Total episodes of Agent are {}".format(len(self.displayer.rewards[0])))
 
-                if current_saved != len(self.displayer.rewards[0]) and len(self.displayer.rewards[0]) % 5 == 0:
+                if current_saved != len(self.displayer.rewards[0]) and len(self.displayer.rewards[0]) % 30 == 0:
                     self.saver.save(len(self.displayer.rewards[0]))
                     current_saved = len(self.displayer.rewards[0])
 

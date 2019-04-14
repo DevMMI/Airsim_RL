@@ -104,6 +104,13 @@ class Agent:
             #print("last episode total reward {}".format(episode_reward))
             print("Episode {}".format(self.nb_ep))
             s = self.env.reset()
+
+            if(s.ndim != 3):
+                print("bad state shape encountered {}".format(s.ndim))
+                continue
+            # else:
+            #     print("good state shape encountered {}".format(s.ndim))
+
             episode_reward = 0
             done = False
 

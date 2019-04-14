@@ -36,7 +36,7 @@ class Saver:
         If the LOAD setting is False or if no model is saved, this methods just
         run an initialization of tensorflow variables.
         """
-        self.saver = tf.train.Saver()
+        self.saver = tf.train.Saver(max_to_keep=None)
 
         if Settings.LOAD:
             print("Loading model...")

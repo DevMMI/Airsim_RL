@@ -23,7 +23,7 @@ def build_actor(states, trainable, scope):
         if hasattr(Settings, 'CONV_LAYERS') and Settings.CONV_LAYERS:
             for i, layer_settings in enumerate(Settings.CONV_LAYERS):
                 layer = tf.layers.conv2d(inputs=layer,
-                                         activation=tf.nn.relu,
+                                         activation=tf.nn.elu,
                                          trainable=trainable,
                                          name='conv_'+str(i),
                                          **layer_settings)
@@ -34,7 +34,7 @@ def build_actor(states, trainable, scope):
         for i, nb_neurons in enumerate(Settings.HIDDEN_ACTOR_LAYERS):
             layer = tf.layers.dense(layer, nb_neurons,
                                     trainable=trainable,
-                                    activation=tf.nn.relu,
+                                    activation=tf.nn.elu,
                                     name='dense_'+str(i))
 
         actions_unscaled = tf.layers.dense(layer, Settings.ACTION_SIZE,
@@ -42,7 +42,7 @@ def build_actor(states, trainable, scope):
                                            name='dense_last')
         # Bound the actions to the valid range
         valid_range = Settings.HIGH_BOUND - Settings.LOW_BOUND
-        actions = Settings.LOW_BOUND + (tf.nn.sigmoid(actions_unscaled) * valid_range)
+        actions = actions_unscaled
         print("Shapes b {}".format(actions.shape))
     return actions
 
