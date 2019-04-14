@@ -20,7 +20,7 @@ class ForestEnv(gym.Env):
     def __init__(self):
         self.observation_space = spaces.Box(low=0.0, high=1.0, shape=(144, 256, 1), dtype=np.float16)
         self.state = np.zeros((144, 256, 1), dtype=np.float16)
-        self.action_space = spaces.Box(low=-1.0, high=1.0, shape=(1, 2), dtype=np.float16)
+        self.action_space = spaces.Box(low=-50.0, high=50.0, shape=(1, 2), dtype=np.float16)
         self.episodeN = 0
         self.stepN = 0
         self.ceiling = -25
@@ -34,7 +34,7 @@ class ForestEnv(gym.Env):
             returns observation, reward, done and info values '''
         action = action[0]
 
-        (collided, position, velocity) = airgym.takeAction(action)
+        collided, position, velocity = airgym.takeAction(action)
         reward = self.computeReward(collided, position, velocity)
 
         self.state = airgym.getObservation()
@@ -66,23 +66,27 @@ class ForestEnv(gym.Env):
         global ceiling
         distance = sqrt(position.x_val**2 + position.y_val**2)
         if collided:
-            reward = -50.0
+            return 50.0
         else:
-            reward = 10
+            reward = -10
+        reward = 0
 
         # velocity greater than 0 is favored, peaks around 20
-        reward += 10.0 * math.tanh(0.1 * velocity)
+        #reward += 10.0 * math.tanh(0.1 * velocity)
+        #reward += velocity
+        #reward = 5
 
-        # punish as drone goes further above ceiling
-        if position.z_val < self.ceiling:
-            difference = -1.0 * float(self.ceiling - position.z_val)
-            # more negative difference is worse
-            reward += 50.0 * math.tanh(0.05 * difference)
-
-
-        if distance > self.radius:
-            difference = distance - self.radius
-            # more positive difference is worse
-            reward += -50 * math.tanh(0.05 * difference)
+        reward += (0.5 * distance)
+        # reward as drone goes further above ceiling
+        # if position.z_val < self.ceiling:
+        #     difference = float(self.ceiling - position.z_val)
+        #     # more positive difference is worse
+        #     reward += (-50.0 * math.tanh(0.05 * difference))
+        #
+        #
+        # if distance > self.radius:
+        #     difference = distance - self.radius
+        #     # more positive difference is worse
+        #     reward += (-50 * math.tanh(0.05 * difference))
 
         return reward
